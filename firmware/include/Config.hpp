@@ -1,0 +1,15 @@
+#pragma once
+
+#define MOTOR_RIGHT_GPIO_PIN1 25
+#define MOTOR_RIGHT_GPIO_PIN2 26
+#define MOTOR_RIGHT_PWM_PIN 27
+#define GPIO_PIN_SPEED_RA 14
+#define GPIO_PIN_SPEED_RB 12
+
+#define MOTOR_LEFT_GPIO_PIN1 18
+#define MOTOR_LEFT_GPIO_PIN2 19
+#define MOTOR_LEFT_PWM_PIN 4
+#define GPIO_PIN_SPEED_LA 15
+#define GPIO_PIN_SPEED_LB 2
+
+#define Console Serial
