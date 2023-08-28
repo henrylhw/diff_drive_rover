@@ -13,7 +13,8 @@
 #include "ROSserial.h"
 
 #define LOOPTIME 10
-#define ENCODER_COUNT_PER_METER_IN_LOOP_TIME (12900 / LOOPTIME)
+#define Left_ENCODER_COUNT_PER_METER_IN_LOOP_TIME (131167 / LOOPTIME)
+#define Right_ENCODER_COUNT_PER_METER_IN_LOOP_TIME (140398 / LOOPTIME)
 
 ros::MyNodeHandle nh;
 
@@ -25,8 +26,8 @@ Motor right(MOTOR_RIGHT_GPIO_PIN1, MOTOR_RIGHT_GPIO_PIN2, MOTOR_RIGHT_PWM_PIN, G
 volatile long encoderLeftPos = 0;  // encoder 1
 volatile long encoderRightPos = 0;  // encoder 2
 
-double left_kp = 17, left_ki = 0, left_kd = 0.0;  // modify for optimal performance
-double right_kp = 20, right_ki = 0, right_kd = 0.0;
+double left_kp = 0.001, left_ki = 0, left_kd = 0.0;  // modify for optimal performance
+double right_kp = 0.001, right_ki = 0, right_kd = 0.0;
 
 float demandx = 0;  // in meter per second
 float demandz = 0;  // radian per second
@@ -182,19 +183,19 @@ void loop() {
     */
     encoderLeftDiff = encoderLeftPos - encoderLeftPrev;
     encoderLeftPrev = encoderLeftPos;
-    pos_act_left = encoderLeftDiff / ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
+    pos_act_left = encoderLeftDiff / Left_ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
 
     encoderRightDiff = encoderRightPos - encoderRightPrev;
     encoderRightPrev = encoderRightPos;
-    pos_act_right = encoderRightDiff / ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
+    pos_act_right = encoderRightDiff / Right_ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
 
     demand_speed_left = demandx - (demandz * 0.145);
     demand_speed_right = demandx + (demandz * 0.145);
     // encoderLeftError = (demand_speed_left * ENCODER_COUNT_PER_METER_IN_LOOP_TIME) - encoderLeftDiff;
     // encoderRightError = (demand_speed_right * ENCODER_COUNT_PER_METER_IN_LOOP_TIME) - encoderRightDiff;
 
-    left_setpoint = demand_speed_left * ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
-    right_setpoint = demand_speed_right * ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
+    left_setpoint = demand_speed_left * Left_ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
+    right_setpoint = demand_speed_right * Right_ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
 
     left_input = encoderLeftDiff;
     right_input = encoderRightDiff;
