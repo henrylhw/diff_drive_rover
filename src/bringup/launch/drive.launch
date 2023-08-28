@@ -1,0 +1,13 @@
+<launch>
+    <rosparam param="ticks_meter">135783</rosparam>
+    <node pkg="differential_drive" type="diff_tf.py" name="diff_tf" output="screen">
+        <rosparam param="ticks_meter">135783</rosparam>
+        <rosparam param="base_width">0.165</rosparam>
+    </node>
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
+        <param name="port" value="/dev/ttyTHS1" />
+        <param name="baud" value="38400" />
+    </node>
+    <!-- <node pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" name="teleop_twist_keyboard"
+        output="screen"></node> -->
+</launch>

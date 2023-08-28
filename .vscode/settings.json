@@ -1,0 +1,9 @@
+{
+    "cmake.sourceDirectory": "/home/innowingintern/diff_drive_rover/ros-workspace/src/bringup",
+    "python.autoComplete.extraPaths": [
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/opt/ros/melodic/lib/python2.7/dist-packages"
+    ]
+}

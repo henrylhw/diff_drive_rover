@@ -1,0 +1,33 @@
+<launch>
+    <!-- <node pkg="rosserial_python"
+        name="rosserial_node"
+        type="serial_node.py" output="screen">
+        <rosparam>port: /dev/ttyTHS1</rosparam>
+        <rosparam>baud: 38400</rosparam>
+    </node> -->
+
+    <node pkg="usb_cam"
+        name="usb_cam_node"
+        type="usb_cam_node" output="screen">
+        <rosparam>image_width: 640</rosparam>
+        <rosparam>image_height: 480</rosparam>
+        <rosparam>framerate: 30</rosparam>
+        <rosparam>video_device: /dev/video0</rosparam>
+        <rosparam>pixel_format: yuyv</rosparam>
+        <rosparam>color_format: yuv420p</rosparam>        
+    </node>
+
+    <node pkg="web_video_server"
+        name="web_video_node"
+        type="web_video_server" output="screen">
+        <rosparam>port: 8080</rosparam>
+    </node>
+
+
+    <node pkg="teleop_twist_keyboard"
+        name="teleop_node"
+        type="teleop_twist_keyboard.py" 
+        output="screen">
+    </node>
+
+</launch>

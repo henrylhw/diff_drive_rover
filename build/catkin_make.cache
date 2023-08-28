@@ -1,0 +1,2 @@
+bringup:differential-drive
+-DCATKIN_DEVEL_PREFIX=/home/innowingintern/diff_drive_rover/ros-workspace/devel -DCMAKE_INSTALL_PREFIX=/home/innowingintern/diff_drive_rover/ros-workspace/install -G Unix Makefiles
