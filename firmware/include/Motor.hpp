@@ -10,9 +10,10 @@
 class Motor {
  public:
   // Constructor - Plus and Minus are the Motor output / en_a and en_b are the encoder inputs
-  Motor(int plus, int minus, int pwm, int en_a, int en_b);
+  Motor(int plus, int minus, int pwm, int en_a, int en_b) ;
 
   void turn(int value);
+  // Console.println("weird function");
   // Motor Outputs - plus is one direction and minus is the other
   int pwm;
   int plus;
@@ -25,6 +26,7 @@ class Motor {
 Motor::Motor(int plus, int minus, int pwm, int en_a, int en_b) {
   pinMode(plus, OUTPUT);
   pinMode(minus, OUTPUT);
+  pinMode(pwm, OUTPUT);
   pinMode(en_a, INPUT_PULLDOWN);
   pinMode(en_b, INPUT_PULLDOWN);
   Motor::pwm = pwm;
@@ -35,6 +37,8 @@ Motor::Motor(int plus, int minus, int pwm, int en_a, int en_b) {
 }
 
 void Motor::turn(int value) {
+  // Console.print("pwm value:  ");
+  // Console.println(value);
   if (value >= 0) {
     analogWrite(pwm, value);
     digitalWrite(plus, 1);

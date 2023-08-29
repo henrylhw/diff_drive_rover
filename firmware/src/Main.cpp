@@ -26,6 +26,12 @@ Motor right(MOTOR_RIGHT_GPIO_PIN1, MOTOR_RIGHT_GPIO_PIN2, MOTOR_RIGHT_PWM_PIN, G
 volatile long encoderLeftPos = 0;  // encoder 1
 volatile long encoderRightPos = 0;  // encoder 2
 
+volatile long Left_ENCODER_COUNT_PER_METER = 131167;  // encoder 1
+volatile long Right_ENCODER_COUNT_PER_METER = 140398;  // encoder 2
+
+float vel_left = 0;
+float vel_right = 0;
+
 double left_kp = 0.001, left_ki = 0, left_kd = 0.0;  // modify for optimal performance
 double right_kp = 0.001, right_ki = 0, right_kd = 0.0;
 
@@ -43,6 +49,7 @@ PID leftPID(&left_input, &left_output, &left_setpoint, left_kp, left_ki, left_kd
 
 unsigned long currentMillis;
 unsigned long prevMillis;
+
 
 float encoderLeftDiff;
 float encoderRightDiff;
@@ -156,8 +163,10 @@ void change_right_b() {
 }
 
 void publishPos(double time) {
-  left_wheel_msg.data = pos_act_left;
-  right_wheel_msg.data = pos_act_right;
+  // left_wheel_msg.data = pos_act_left;
+  // right_wheel_msg.data = pos_act_right;
+  left_wheel_msg.data = encoderLeftPos;
+  right_wheel_msg.data = encoderRightPos;
   left_wheel_pub.publish(&left_wheel_msg);
   right_wheel_pub.publish(&right_wheel_msg);
 }
@@ -174,12 +183,15 @@ void loop() {
       That is 129 per 10 millisecound loop as 1 meter/second velocity
 
       Demand in meter/second but we need to convert to encoder counts per 10ms loop
+
+      m/s  = encoder_diff_per_loop_time/ (encoder counts in one meter)* LOOP_time/1000
+
     */
     /*
-      Distance between wheels is 290mm, half of that is 145mm
-      Circumference of 290mm circle is 910mm, to turn 180 (pi radians),
-      each wheel needs to drive half of that, which is 455mm.
-      To turn on radian, earch wheel needs to drive 455/pi = 145mm (per second for 1 rad/s)
+      Distance between wheels is 290mm, half of that is 145mm   //165mm /2 = 82.5mm
+      Circumference of 290mm circle is 910mm, to turn 180 (pi radians), //65*3.14 =  102mm;   2r = 65
+      each wheel needs to drive half of that, which is 455mm.   // 102/2 = 259mm
+      To turn on radian, earch wheel needs to drive 455/pi = 145mm (per second for 1 rad/s) //65mm
     */
     encoderLeftDiff = encoderLeftPos - encoderLeftPrev;
     encoderLeftPrev = encoderLeftPos;
@@ -189,8 +201,10 @@ void loop() {
     encoderRightPrev = encoderRightPos;
     pos_act_right = encoderRightDiff / Right_ENCODER_COUNT_PER_METER_IN_LOOP_TIME;
 
-    demand_speed_left = demandx - (demandz * 0.145);
-    demand_speed_right = demandx + (demandz * 0.145);
+    // demand_speed_left = demandx - (demandz * 0.0825); //0.145
+    // demand_speed_right = demandx + (demandz * 0.0825);
+    demand_speed_left = (demandx - (demandz * 0.0825))/0.0325; //0.145
+    demand_speed_right = (demandx + (demandz * 0.0825))/0.0325;
     // encoderLeftError = (demand_speed_left * ENCODER_COUNT_PER_METER_IN_LOOP_TIME) - encoderLeftDiff;
     // encoderRightError = (demand_speed_right * ENCODER_COUNT_PER_METER_IN_LOOP_TIME) - encoderRightDiff;
 
@@ -200,14 +214,46 @@ void loop() {
     left_input = encoderLeftDiff;
     right_input = encoderRightDiff;
 
+    // vel_left   = encoderLeftDiff/ ((131167)* (10/1000));
+    // vel_right  = encoderRightDiff/ (140398* (10/1000));
+    vel_left   = encoderLeftDiff * 0.00076239;
+    vel_right  = encoderRightDiff * 0.00071226;
+    
+    Console.print("Vel_L,R:  ");
+     Console.print(vel_left);
+     Console.print(",");
+     Console.println(vel_right);
+
+
     leftPID.Compute();
     rightPID.Compute();
 
     left.turn(left_output);
     right.turn(right_output);
+
+    // Console.print("L,R output:  ");
+    //  Console.print(left_output);
+    //  Console.print(",");
+    //  Console.println(right_output);
+
+
+     //encoder per m = 135783
+     // encoderdiff = encoder pos- encoder prev
+     // 135783 = 135783 -0
+     //vel_left = encoderLeftDiff / LOOPTIME;
+  
+
+    // Console.print("L,R encoder_pos:  ");
+    //  Console.print(encoderLeftPos);
+    //  Console.print(",");
+    //  Console.println(encoderRightPos);
+     
+
+    // Console.print("L,R pos_act:  ");
     //  Console.print(pos_act_left);
     //  Console.print(",");
     //  Console.println(pos_act_right);
+    //  Console.println();
 
     publishPos(LOOPTIME);
     if (updatenh > 10) {
